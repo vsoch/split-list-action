@@ -27,8 +27,9 @@ runs:
         outfile: ${{ inputs.outfile }}
         calendar_split: ${{ inputs.calendar_split }}
         random_split: ${{ inputs.random_split }}
+        action_path: ${{ github.action_path }}
       run: |
-        cmd="python generate.py"
+        cmd="python ${action_path}/generate.py"
         if [[ "${outfile}" != "" ]]; then
             cmd="${cmd} --outfile ${outfile}"
         fi
