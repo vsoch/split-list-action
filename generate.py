@@ -50,6 +50,13 @@ def read_file(filename, mode="r"):
     return content
 
 
+def write_file(content, filename):
+    """
+    Write a file.
+    """
+    with open(filename, 'w') as fd:
+        fd.writelines(content)
+
 def read_json(filename, mode="r"):
     """
     Read a json file to a dictionary.
