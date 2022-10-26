@@ -1,0 +1,51 @@
+name: "split-list-action"
+description: "Generate a hashed list of identifiers to evenly split up."
+branding:
+  icon: 'activity'
+  color: 'green'
+inputs:
+  ids_file:
+    description: Text file with identifiers to split, one per line.
+    required: true
+  outfile:
+    description: output file to write to (otherwise prints to screen)
+    required: false
+  random_split:
+    description: change default for random split N, if using
+    required: false
+  calendar_split:
+    description: split identifiers by letter matched to month (and return current day)
+    required: true
+    default: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Split
+      env:
+        ids_file: ${{ inputs.ids_file }}
+        outfile: ${{ inputs.outfile }}
+        calendar_split: ${{ inputs.calendar_split }}
+        random_split: ${{ inputs.random_split }}
+      run: |
+        cmd="python generate.py"
+        if [[ "${outfile}" != "" ]]; then
+            cmd="${cmd} --outfile ${outfile}"
+        fi
+        if [[ "${keep_identifiers}" == "true" ]]; then
+            cmd="$cmd --keep-identifiers"
+        fi
+        if [[ "${calendar_split}" == "true" ]]; then
+            cmd="$cmd --calendar-split"
+        fi
+        if [[ "${calendar_split}" == "true" ]] && [[ "${random_split}" != "" ]]; then
+            printf "You can only do one of `random_split` or `calendar_split`\n"
+            exit 1;
+        fi
+        if [[ "${random_split}" != "" ]]; then
+            cmd="$cmd --random-split ${random_split}"
+        fi
+        cmd="${cmd} ${ids_file}"
+        printf "${cmd}\n"
+        $cmd
+      shell: bash
